@@ -4,14 +4,14 @@ import paho.mqtt.client as mqtt
 from threading import Thread
 
 TOPIC = "esp32/pirsensor"
-BROKER_ADRESS = "192.168.0.101"
+BROKER_ADRESS = "192.168.0.2"
 PORT = 1883
 
 
 class MQTTLightManager():
     def __init__(self, light_list: list):
         self.lights = light_list
-        self.on_time = 0.5
+        self.on_time = 3
         self.mqtt_client = mqtt.Client()
         self.mqtt_client.on_connect = self._on_connect
         self.mqtt_client.on_message = self._on_message
@@ -45,12 +45,16 @@ class MQTTLightManager():
             light.turn_off()
 
     def run(self):
-        self.mqtt_client.connect(BROKER_ADRESS, PORT)
-        self.mqtt_client.loop_start()
         while True:
-            for light in self.lights:
-                now = time.time()
-                if light.on_since is not None:
-                    if now - light.on_since > self.on_time:
-                        light.turn_off()
-                        light.on_since = None
+            try:
+                self.mqtt_client.connect(BROKER_ADRESS, PORT)
+                self.mqtt_client.loop_start()
+                while True:
+                    for light in self.lights:
+                        now = time.time()
+                        if light.on_since is not None:
+                            if now - light.on_since > self.on_time:
+                                light.turn_off()
+                                light.on_since = None
+            except ConnectionRefusedError:
+                time.sleep(3)
