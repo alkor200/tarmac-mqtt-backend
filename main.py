@@ -1,8 +1,10 @@
+import sys
+
 from light import Light
 from mqtt_light_manager import MQTTLightManager
 
-# relais = [26, 16, 20, 21, 5, 6, 19, 13, 18, 17, 27, 23, 22]  # , 24, 25, 12]
-relais = []
+relais = [26, 16, 20, 21, 5, 6, 19, 13, 18, 17, 27, 23, 22]  # , 24, 25, 12]
+# relais = []
 
 if __name__ == '__main__':
     manager = MQTTLightManager
@@ -17,4 +19,8 @@ if __name__ == '__main__':
 
     light_manager = MQTTLightManager(light_list)
 
-    light_manager.run()
+    try:
+        light_manager.run()
+    except KeyboardInterrupt:
+        light_manager.all_off()
+        sys.exit(0)

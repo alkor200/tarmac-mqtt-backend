@@ -8,6 +8,7 @@ class Light:
         self.number = number
         self.pin = pin
         self.state = False
+        self.on_since = None
         GPIO.setup(self.pin, GPIO.OUT)
         GPIO.output(self.pin, GPIO.LOW)
 
